@@ -1,0 +1,37 @@
+workflows:
+  ios-adhoc:
+    name: iOS Ad Hoc IPA
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: APP_STORE_CONNECT_API_KEY
+    environment:
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: com.bantu.restaurante
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+          source: true
+    scripts:
+      - name: Obtener dependencias
+        script: flutter pub get
+      - name: Analizar código
+        script: dart analyze
+      - name: Ejecutar pruebas
+        script: flutter test
+      - name: Configurar firma iOS
+        script: xcode-project use-profiles
+      - name: Instalar pods
+        script: find . -name "Podfile" -execdir pod install \;
+      - name: Compilar IPA ad hoc
+        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log

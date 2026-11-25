@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Fase 2 completada: primer arranque, PIN, sesión segura, administración de empleados y `GuardiaRol`. `dart analyze` sin issues y `flutter test` en verde (45 pruebas). Siguiente: Fase 3 (menú y categorías).
+Fase 2 completada: primer arranque, PIN, sesión segura, administración de empleados y `GuardiaRol`. `dart analyze` sin issues y `flutter test` en verde (45 pruebas). Siguiente: Fase 3 (menú y categorías). Se agregó `codemagic.yaml` con el workflow `ios-adhoc` para generar `.ipa`; requiere integración de App Store Connect y dispositivos registrados.
 
 ## Convención por fase
 
@@ -41,7 +41,7 @@ y una actualización de este archivo.
 
 ## Deudas / pendientes
 
-- iOS no se compila en Windows; requiere macOS/Xcode o Codemagic.
+- iOS no se compila en Windows; usar el workflow `ios-adhoc` de `codemagic.yaml` en Codemagic.
 - `flutter analyze` falla por LSP con la ruta acentuada; usar `dart analyze`.
 - Codegen requiere `--force-jit` en Windows; `--delete-conflicting-outputs` ya no tiene efecto.
 - Menú, pedidos, cierres, finanzas y exportación aún no tienen pantalla.

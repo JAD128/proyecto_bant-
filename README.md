@@ -31,6 +31,18 @@ Para generar el APK de depuración:
 flutter build apk --debug
 ```
 
+## iOS ad hoc en Codemagic
+
+`codemagic.yaml` define el workflow `ios-adhoc` para generar un `.ipa` instalable en iPhones registrados.
+
+Antes de ejecutarlo:
+
+1. Registrar el App ID `com.bantu.restaurante` y los UDID de los iPhones de prueba en Apple Developer.
+2. Guardar en Codemagic una integración de App Store Connect con el nombre `APP_STORE_CONNECT_API_KEY`.
+3. Ejecutar el workflow `ios-adhoc`.
+
+El `.ipa` queda en `build/ios/ipa/`. El workflow usa `distribution_type: ad_hoc`, así que el perfil de aprovisionamiento debe incluir cada dispositivo. Para TestFlight, cambiar `distribution_type` a `app_store`.
+
 ## Estado
 
 El proyecto se construye por fases. El estado actual está en `docs/PROGRESO.md`.
