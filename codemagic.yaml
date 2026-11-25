@@ -1,14 +1,9 @@
 workflows:
-  ios-adhoc:
-    name: iOS Ad Hoc IPA
+  ios-sideloadly:
+    name: iOS Unsigned IPA for Sideloadly
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: APP_STORE_CONNECT_API_KEY
     environment:
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.bantu.restaurante
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -26,12 +21,16 @@ workflows:
         script: dart analyze
       - name: Ejecutar pruebas
         script: flutter test
-      - name: Configurar firma iOS
-        script: xcode-project use-profiles
       - name: Instalar pods
         script: find . -name "Podfile" -execdir pod install \;
-      - name: Compilar IPA ad hoc
-        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+      - name: Compilar iOS sin firma
+        script: flutter build ios --release --no-codesign
+      - name: Empaquetar IPA sin firma
+        script: |
+          mkdir -p build/ios/sideloadly/Payload
+          cp -R build/ios/iphoneos/Runner.app build/ios/sideloadly/Payload/
+          cd build/ios/sideloadly
+          zip -qr Bantu-unsigned.ipa Payload
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/sideloadly/*.ipa
       - /tmp/xcodebuild_logs/*.log

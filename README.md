@@ -31,17 +31,11 @@ Para generar el APK de depuración:
 flutter build apk --debug
 ```
 
-## iOS ad hoc en Codemagic
+## iOS sin firma para Sideloadly
 
-`codemagic.yaml` define el workflow `ios-adhoc` para generar un `.ipa` instalable en iPhones registrados.
+`codemagic.yaml` define el workflow `ios-sideloadly`, que genera `Bantu-unsigned.ipa` sin perfiles ni certificados de Apple. Descarga el artefacto, ábrelo en Sideloadly, firma con tu Apple ID e instala por USB.
 
-Antes de ejecutarlo:
-
-1. Registrar el App ID `com.bantu.restaurante` y los UDID de los iPhones de prueba en Apple Developer.
-2. Guardar en Codemagic una integración de App Store Connect con el nombre `APP_STORE_CONNECT_API_KEY`.
-3. Ejecutar el workflow `ios-adhoc`.
-
-El `.ipa` queda en `build/ios/ipa/`. El workflow usa `distribution_type: ad_hoc`, así que el perfil de aprovisionamiento debe incluir cada dispositivo. Para TestFlight, cambiar `distribution_type` a `app_store`.
+Con Apple ID personal la app dura aproximadamente 7 días y debe re-firmarse; con Apple Developer Program de pago la vigencia es mayor. Si el bundle ID `com.bantu.restaurante` genera conflicto, permite que Sideloadly lo modifique. En el iPhone, confía el certificado en Ajustes → General → VPN y administración de dispositivos.
 
 ## Estado
 
