@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            bantu: lib/datos/bd/bantu_database.dart
