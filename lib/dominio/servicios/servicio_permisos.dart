@@ -10,6 +10,8 @@ enum Accion {
   editarProducto,
   desactivarProducto,
   crearCategoria,
+  editarCategoria,
+  desactivarCategoria,
   verFinanzas,
   registrarGasto,
   cerrarDia,

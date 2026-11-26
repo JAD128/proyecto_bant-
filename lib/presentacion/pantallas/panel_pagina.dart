@@ -5,6 +5,7 @@ import '../../../dominio/servicios/servicio_permisos.dart';
 import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
+import 'menu_pagina.dart';
 import 'usuarios_pagina.dart';
 
 class PanelPagina extends StatelessWidget {
@@ -70,11 +71,19 @@ class PanelPagina extends StatelessWidget {
                     label: const Text('Usuarios'),
                   ),
                 if (esAdmin) const SizedBox(height: 12),
-                const Card(
+                Card(
                   child: ListTile(
-                    leading: Icon(Icons.restaurant_menu_outlined),
-                    title: Text('Menú'),
-                    subtitle: Text('Disponible en la siguiente fase.'),
+                    leading: const Icon(Icons.restaurant_menu_outlined),
+                    title: const Text('Menú'),
+                    subtitle: const Text('Categorías y productos.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardiaRol(
+                          accion: Accion.verMenu,
+                          child: MenuPagina(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

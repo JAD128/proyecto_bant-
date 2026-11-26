@@ -53,6 +53,23 @@ class DriftCategoriaRepositorio implements CategoriaRepositorio {
     );
   }
 
+  @override
+  Future<void> desactivar(String id) async {
+    final categoria = await obtenerPorId(id);
+    if (categoria == null) {
+      throw StateError('Categoría no encontrada: $id');
+    }
+    await actualizar(
+      Categoria(
+        id: categoria.id,
+        nombre: categoria.nombre,
+        activa: false,
+        orden: categoria.orden,
+        creadoEn: categoria.creadoEn,
+      ),
+    );
+  }
+
   Categoria _mapear(dynamic fila) {
     return Categoria(
       id: fila.id as String,

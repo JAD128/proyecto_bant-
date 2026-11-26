@@ -18,6 +18,7 @@ import '../datos/sesion/repositorio_sesion_seguro.dart';
 import '../dominio/servicios/calculador_finanzas.dart';
 import '../dominio/servicios/calculador_pedido.dart';
 import '../dominio/servicios/pin_hasher.dart';
+import '../dominio/servicios/servicio_menu.dart';
 import '../dominio/servicios/servicio_permisos.dart';
 import '../dominio/servicios/servicio_usuarios.dart';
 
@@ -37,6 +38,7 @@ class Dependencias {
   final PinHasher pinHasher;
   final ServicioPermisos permisos;
   late final ServicioUsuarios servicioUsuarios;
+  late final ServicioMenu servicioMenu;
 
   Dependencias({
     required this.baseDatos,
@@ -56,6 +58,11 @@ class Dependencias {
       usuarios: usuarios,
       sesion: sesion,
       hasher: pinHasher,
+      permisos: permisos,
+    );
+    servicioMenu = ServicioMenu(
+      categorias: categorias,
+      productos: productos,
       permisos: permisos,
     );
   }

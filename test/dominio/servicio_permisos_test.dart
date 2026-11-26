@@ -48,6 +48,9 @@ void main() {
       expect(permisos.puede(empleado, Accion.crearPedido), isTrue);
       expect(permisos.puede(empleado, Accion.verHistorial), isTrue);
       expect(permisos.puede(empleado, Accion.verTodosPedidos), isFalse);
+      expect(permisos.puede(empleado, Accion.crearCategoria), isFalse);
+      expect(permisos.puede(empleado, Accion.editarCategoria), isFalse);
+      expect(permisos.puede(empleado, Accion.desactivarCategoria), isFalse);
       expect(permisos.puede(empleado, Accion.verFinanzas), isFalse);
       expect(permisos.puede(empleado, Accion.configurarUsuarios), isFalse);
     });

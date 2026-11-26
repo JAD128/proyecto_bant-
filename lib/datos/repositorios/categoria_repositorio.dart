@@ -10,4 +10,6 @@ abstract class CategoriaRepositorio {
   Future<void> guardar(Categoria categoria);
 
   Future<void> actualizar(Categoria categoria);
+
+  Future<void> desactivar(String id);
 }

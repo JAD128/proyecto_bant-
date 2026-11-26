@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'configuracion/dependencias.dart';
+import 'estado/menu_proveedor.dart';
 import 'estado/sesion_proveedor.dart';
 import 'presentacion/pantallas/configuracion_inicial_pagina.dart';
 import 'presentacion/pantallas/inicio_sesion_pagina.dart';
@@ -13,17 +14,20 @@ Future<void> main() async {
   final dependencias = Dependencias.paraApp();
   final sesion = SesionProveedor(dependencias: dependencias);
   await sesion.inicializar();
-  runApp(BantuApp(dependencias: dependencias, sesion: sesion));
+  final menu = MenuProveedor(dependencias: dependencias, sesion: sesion);
+  runApp(BantuApp(dependencias: dependencias, sesion: sesion, menu: menu));
 }
 
 class BantuApp extends StatelessWidget {
   final Dependencias dependencias;
   final SesionProveedor sesion;
+  final MenuProveedor menu;
 
   const BantuApp({
     super.key,
     required this.dependencias,
     required this.sesion,
+    required this.menu,
   });
 
   @override
@@ -32,6 +36,7 @@ class BantuApp extends StatelessWidget {
       providers: [
         Provider<Dependencias>.value(value: dependencias),
         ChangeNotifierProvider<SesionProveedor>.value(value: sesion),
+        ChangeNotifierProvider<MenuProveedor>.value(value: menu),
       ],
       child: MaterialApp(
         title: 'Bantú',
