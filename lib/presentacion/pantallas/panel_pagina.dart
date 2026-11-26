@@ -5,6 +5,7 @@ import '../../../dominio/servicios/servicio_permisos.dart';
 import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
+import 'cierres_pagina.dart';
 import 'historial_pagina.dart';
 import 'menu_pagina.dart';
 import 'pedido_pagina.dart';
@@ -121,11 +122,16 @@ class PanelPagina extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Card(
+                Card(
                   child: ListTile(
-                    leading: Icon(Icons.calendar_month_outlined),
-                    title: Text('Cierres'),
-                    subtitle: Text('Disponible en una fase posterior.'),
+                    leading: const Icon(Icons.calendar_month_outlined),
+                    title: const Text('Cierres'),
+                    subtitle: const Text('Snapshot diario con auditoría.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const CierresPagina(),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

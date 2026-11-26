@@ -18,6 +18,7 @@ import '../datos/sesion/repositorio_sesion_seguro.dart';
 import '../dominio/servicios/calculador_finanzas.dart';
 import '../dominio/servicios/calculador_pedido.dart';
 import '../dominio/servicios/pin_hasher.dart';
+import '../dominio/servicios/servicio_cierres.dart';
 import '../dominio/servicios/servicio_historial.dart';
 import '../dominio/servicios/servicio_menu.dart';
 import '../dominio/servicios/servicio_pedidos.dart';
@@ -43,6 +44,7 @@ class Dependencias {
   late final ServicioMenu servicioMenu;
   late final ServicioPedidos servicioPedidos;
   late final ServicioHistorial servicioHistorial;
+  late final ServicioCierres servicioCierres;
 
   Dependencias({
     required this.baseDatos,
@@ -76,6 +78,13 @@ class Dependencias {
       permisos: permisos,
     );
     servicioHistorial = ServicioHistorial(pedidos: pedidos, permisos: permisos);
+    servicioCierres = ServicioCierres(
+      cierres: cierres,
+      pedidos: pedidos,
+      gastos: gastos,
+      calculador: calculadorFinanzas,
+      permisos: permisos,
+    );
   }
 
   factory Dependencias.paraApp() {

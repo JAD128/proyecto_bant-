@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'configuracion/dependencias.dart';
+import 'estado/cierre_proveedor.dart';
 import 'estado/historial_proveedor.dart';
 import 'estado/menu_proveedor.dart';
 import 'estado/pedido_proveedor.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
     dependencias: dependencias,
     sesion: sesion,
   );
+  final cierre = CierreProveedor(dependencias: dependencias, sesion: sesion);
   runApp(
     BantuApp(
       dependencias: dependencias,
@@ -29,6 +31,7 @@ Future<void> main() async {
       menu: menu,
       pedido: pedido,
       historial: historial,
+      cierre: cierre,
     ),
   );
 }
@@ -39,6 +42,7 @@ class BantuApp extends StatelessWidget {
   final MenuProveedor menu;
   final PedidoProveedor pedido;
   final HistorialProveedor historial;
+  final CierreProveedor cierre;
 
   const BantuApp({
     super.key,
@@ -47,6 +51,7 @@ class BantuApp extends StatelessWidget {
     required this.menu,
     required this.pedido,
     required this.historial,
+    required this.cierre,
   });
 
   @override
@@ -58,6 +63,7 @@ class BantuApp extends StatelessWidget {
         ChangeNotifierProvider<MenuProveedor>.value(value: menu),
         ChangeNotifierProvider<PedidoProveedor>.value(value: pedido),
         ChangeNotifierProvider<HistorialProveedor>.value(value: historial),
+        ChangeNotifierProvider<CierreProveedor>.value(value: cierre),
       ],
       child: MaterialApp(
         title: 'Bantú',

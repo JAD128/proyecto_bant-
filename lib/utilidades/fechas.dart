@@ -1,4 +1,6 @@
 class Fechas {
+  static String hoyLocal() => claveLocal(DateTime.now());
+
   static String claveLocal(DateTime fecha) {
     final anio = fecha.year.toString().padLeft(4, '0');
     final mes = fecha.month.toString().padLeft(2, '0');

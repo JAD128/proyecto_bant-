@@ -64,8 +64,10 @@ Cada `pedido_items` guarda nombre, categoría, precio unitario y empaque unitari
 
 ## Cierres diarios
 
-- Un cierre por `fechaLocal`.
-- Solo cuenta pedidos `confirmado` y gastos de esa fecha.
-- Al cerrar se guarda un snapshot de totales.
-- Una corrección crea un registro en `cierre_auditorias` con motivo, usuario y valores antes/después. El cierre original no se sobrescribe.
+- Existe un único cierre por `fechaLocal`. `ServicioCierres.cerrarDia` rechaza un segundo cierre para la misma fecha con `StateError('Ya existe un cierre para esa fecha.')`; nunca se sobrescribe sin auditoría.
+- Solo cuentan los pedidos `confirmado` y los gastos de esa fecha. `CalculadorFinanzas.calcular` produce `totalPedidos`, `totalVentas`, `totalEfectivo`, `totalTransferencia`, `totalLlevar`, `totalLocal`, `totalEgresos` y `saldoNeto`.
+- Al cerrar se guarda un snapshot con `estado: cerrado`, `cerradoPor`, `creadoEn` y `cerradoEn`, y se devuelve el registro releído por fecha.
+- Cerrar y corregir requiere administrador con `Accion.cerrarDia`. Consultar cierres y auditorías acepta `Accion.verFinanzas` o `Accion.cerrarDia`.
+- Una corrección recalcula el snapshot con los datos vigentes conservando `id`, `fechaLocal`, `creadoEn`, `cerradoEn` y `cerradoPor`. Antes de `actualizar` se llama a `auditar`, guardando `CierreAuditoria` con motivo, usuario y `valoresAntes`/`valoresDespues` como `jsonEncode` de un mapa simple de totales, sin secretos.
+- El original queda preservado en `cierre_auditorias`: la corrección no pierde el snapshot previo ni simula que nunca existió.
 - Los informes de una fecha cerrada usan el snapshot; los de un día abierto calculan en vivo.
