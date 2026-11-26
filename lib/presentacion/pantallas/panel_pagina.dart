@@ -6,6 +6,7 @@ import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
 import 'cierres_pagina.dart';
+import 'finanzas_pagina.dart';
 import 'historial_pagina.dart';
 import 'menu_pagina.dart';
 import 'pedido_pagina.dart';
@@ -135,11 +136,19 @@ class PanelPagina extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Card(
+                Card(
                   child: ListTile(
-                    leading: Icon(Icons.account_balance_wallet_outlined),
-                    title: Text('Finanzas'),
-                    subtitle: Text('Disponible en una fase posterior.'),
+                    leading: const Icon(Icons.account_balance_wallet_outlined),
+                    title: const Text('Finanzas'),
+                    subtitle: const Text('Resumen, caja y gastos.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardiaRol(
+                          accion: Accion.verFinanzas,
+                          child: FinanzasPagina(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

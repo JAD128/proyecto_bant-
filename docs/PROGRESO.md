@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Fase 6 completada: cierres diarios con snapshot por `fechaLocal` y correcciones auditadas. `ServicioCierres` valida permisos, calcula totales con `CalculadorFinanzas`, rechaza duplicados y registra `CierreAuditoria` antes de actualizar. UI y provider conectados en el panel. `dart analyze` sin issues y `flutter test` en verde (88 pruebas). Siguiente: Fase 7 (finanzas y gastos). Se agregó `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
+Fase 7 completada: resumen financiero por rango y gastos. `ServicioFinanzas` valida permisos y fechas, delega el cálculo en `CalculadorFinanzas`, ordena los gastos y permite registrar/editar sin borrar. `FinanzasProveedor` y `FinanzasPagina` conectados en `main.dart` y en el panel; Exportación sigue pendiente de Fase 8. `dart analyze` sin issues y `flutter test` en verde (104 pruebas). Siguiente: Fase 8 (exportación XLSX/PDF). Se agregó `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
 
 ## Convención por fase
 
@@ -25,7 +25,7 @@ y una actualización de este archivo.
 - [x] Fase 4 — pedidos, cálculo financiero e idempotencia.
 - [x] Fase 5 — historial y filtros.
 - [x] Fase 6 — cierres diarios y auditoría.
-- [ ] Fase 7 — finanzas y gastos.
+- [x] Fase 7 — finanzas y gastos.
 - [ ] Fase 8 — exportación XLSX/PDF.
 - [ ] Fase 9 — UI final, accesibilidad y responsive.
 - [ ] Fase 10 — documentación final y builds.
@@ -49,10 +49,15 @@ y una actualización de este archivo.
 - Existe un único cierre por `fechaLocal`; `cerrarDia` rechaza duplicados con `StateError` y nunca sobrescribe sin auditoría.
 - Una corrección recalcula el snapshot con los datos vigentes de esa fecha y llama a `auditar` antes de `actualizar`. `valoresAntes` y `valoresDespues` son `jsonEncode` de un mapa simple; el original queda preservado en la auditoría, no se pierde.
 - Cerrar y corregir exige administrador con `Accion.cerrarDia`; consultar cierres y auditorías acepta `Accion.verFinanzas` o `Accion.cerrarDia`.
+- La Fase 7 tampoco tocó tablas Drift ni `pubspec.yaml`: reutiliza `GastoRepositorio`, `PedidoRepositorio`, `CalculadorFinanzas` y `ServicioPermisos`.
+- Consultar el resumen y los gastos exige `Accion.verFinanzas`; registrar y actualizar gastos exige `Accion.registrarGasto`.
+- El rango `desde`/`hasta` usa fechas locales `YYYY-MM-DD` validadas con `Validadores`; un rango invertido se rechaza con `ArgumentError`.
+- Los gastos no tienen método de pago y nunca se eliminan: solo se registran y se actualizan. El concepto se guarda recortado en `descripcion`, con valor entero positivo; `id`, `horaLocal`, `usuarioId` y `creadoEn` se conservan al editar.
+- El resumen filtra pedidos y gastos por el mismo rango; los pedidos anulados no aportan ingresos y los gastos solo reducen `saldoNeto`, nunca `efectivoEnCaja`.
 
 ## Deudas / pendientes
 
 - iOS no se compila en Windows; usar el workflow `ios-sideloadly` de `codemagic.yaml` en Codemagic.
 - `flutter analyze` falla por LSP con la ruta acentuada; usar `dart analyze`.
 - Codegen requiere `--force-jit` en Windows; `--delete-conflicting-outputs` ya no tiene efecto.
-- Finanzas y exportación permanecen como tarjetas deshabilitadas en el panel; se implementan en las fases 7 y 8.
+- Finanzas ya está implementada; Exportación permanece como tarjeta deshabilitada en el panel y se implementa en la Fase 8.
