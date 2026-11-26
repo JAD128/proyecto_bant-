@@ -6,6 +6,7 @@ import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
 import 'menu_pagina.dart';
+import 'pedido_pagina.dart';
 import 'usuarios_pagina.dart';
 
 class PanelPagina extends StatelessWidget {
@@ -87,11 +88,19 @@ class PanelPagina extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Card(
+                Card(
                   child: ListTile(
-                    leading: Icon(Icons.receipt_long_outlined),
-                    title: Text('Pedidos'),
-                    subtitle: Text('Disponible en una fase posterior.'),
+                    leading: const Icon(Icons.receipt_long_outlined),
+                    title: const Text('Pedidos'),
+                    subtitle: const Text('Registro y cálculo en vivo.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardiaRol(
+                          accion: Accion.crearPedido,
+                          child: PedidoPagina(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -4,6 +4,7 @@ import '../valores/rol.dart';
 enum Accion {
   verMenu,
   crearPedido,
+  anularPedido,
   verHistorial,
   verTodosPedidos,
   crearProducto,

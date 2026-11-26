@@ -32,6 +32,10 @@ totalPedido = subtotalPedido + costoEmpaquePedido
 
 Si `precioLlevar` es `null` con estrategia `precioFijo`, el pedido se rechaza.
 
+### Modalidad del pedido
+
+La modalidad se define por el carrito completo: si cualquier línea tiene `ModalidadPedido.llevar`, el pedido se guarda como `llevar`; si todas son `local`, se guarda como `local`. Cada `pedido_items` conserva la modalidad de su línea y los precios calculados para esa línea, aunque el pedido global sea `llevar` por otra línea.
+
 ## Ingresos, egresos y balance
 
 ```text
@@ -56,7 +60,7 @@ Cada `pedido_items` guarda nombre, categoría, precio unitario y empaque unitari
 
 ## Duplicados
 
-Cada carrito genera una `idempotenciaKey`. La base de datos la declara única. Confirmar dos veces el mismo carrito no crea dos pedidos.
+`PedidoProveedor` genera una `idempotenciaKey` al iniciar un pedido y la renueva al reiniciar; después de confirmar se prepara un pedido nuevo con otra clave. `ServicioPedidos` valida la clave, consulta `PedidoRepositorio.obtenerPorIdempotenciaKey` antes de guardar y, si ya existe, devuelve ese pedido sin calcular ni insertar otro. La columna `idempotencia_key` es `UNIQUE`, de modo que un intento directo de inserción duplicada falla en la base de datos. Confirmar dos veces el mismo carrito no crea dos pedidos.
 
 ## Cierres diarios
 

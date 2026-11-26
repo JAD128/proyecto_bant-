@@ -39,6 +39,7 @@ void main() {
 
       expect(permisos.puede(inactivo, Accion.verMenu), isFalse);
       expect(permisos.puede(inactivo, Accion.crearPedido), isFalse);
+      expect(permisos.puede(inactivo, Accion.anularPedido), isFalse);
     });
 
     test('empleado solo puede menu, pedidos e historial', () {
@@ -46,6 +47,7 @@ void main() {
 
       expect(permisos.puede(empleado, Accion.verMenu), isTrue);
       expect(permisos.puede(empleado, Accion.crearPedido), isTrue);
+      expect(permisos.puede(empleado, Accion.anularPedido), isFalse);
       expect(permisos.puede(empleado, Accion.verHistorial), isTrue);
       expect(permisos.puede(empleado, Accion.verTodosPedidos), isFalse);
       expect(permisos.puede(empleado, Accion.crearCategoria), isFalse);

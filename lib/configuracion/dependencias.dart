@@ -19,6 +19,7 @@ import '../dominio/servicios/calculador_finanzas.dart';
 import '../dominio/servicios/calculador_pedido.dart';
 import '../dominio/servicios/pin_hasher.dart';
 import '../dominio/servicios/servicio_menu.dart';
+import '../dominio/servicios/servicio_pedidos.dart';
 import '../dominio/servicios/servicio_permisos.dart';
 import '../dominio/servicios/servicio_usuarios.dart';
 
@@ -39,6 +40,7 @@ class Dependencias {
   final ServicioPermisos permisos;
   late final ServicioUsuarios servicioUsuarios;
   late final ServicioMenu servicioMenu;
+  late final ServicioPedidos servicioPedidos;
 
   Dependencias({
     required this.baseDatos,
@@ -63,6 +65,12 @@ class Dependencias {
     servicioMenu = ServicioMenu(
       categorias: categorias,
       productos: productos,
+      permisos: permisos,
+    );
+    servicioPedidos = ServicioPedidos(
+      pedidos: pedidos,
+      categorias: categorias,
+      calculador: calculadorPedido,
       permisos: permisos,
     );
   }

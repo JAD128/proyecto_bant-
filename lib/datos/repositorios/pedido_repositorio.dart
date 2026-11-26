@@ -5,6 +5,8 @@ abstract class PedidoRepositorio {
 
   Future<Pedido?> obtenerPorId(String id);
 
+  Future<Pedido?> obtenerPorIdempotenciaKey(String clave);
+
   Future<List<Pedido>> obtenerTodos();
 
   Future<List<Pedido>> obtenerPorFecha(String fechaLocal);

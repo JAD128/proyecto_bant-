@@ -10,7 +10,9 @@ class PedidoDao extends DatabaseAccessor<BantuDatabase> with _$PedidoDaoMixin {
   PedidoDao(super.base);
 
   Future<List<Pedido>> todos() {
-    return (select(pedidos)..orderBy([(f) => OrderingTerm.desc(f.creadoEn)])).get();
+    return (select(
+      pedidos,
+    )..orderBy([(f) => OrderingTerm.desc(f.creadoEn)])).get();
   }
 
   Future<List<Pedido>> porFecha(String fechaLocal) {
@@ -31,8 +33,16 @@ class PedidoDao extends DatabaseAccessor<BantuDatabase> with _$PedidoDaoMixin {
     return (select(pedidos)..where((f) => f.id.equals(id))).getSingleOrNull();
   }
 
+  Future<Pedido?> porIdempotenciaKey(String clave) {
+    return (select(
+      pedidos,
+    )..where((f) => f.idempotenciaKey.equals(clave))).getSingleOrNull();
+  }
+
   Future<List<PedidoItem>> itemsDePedido(String pedidoId) {
-    return (select(pedidoItems)..where((f) => f.pedidoId.equals(pedidoId))).get();
+    return (select(
+      pedidoItems,
+    )..where((f) => f.pedidoId.equals(pedidoId))).get();
   }
 
   Future<void> insertarConItems(
@@ -47,7 +57,8 @@ class PedidoDao extends DatabaseAccessor<BantuDatabase> with _$PedidoDaoMixin {
     });
   }
 
-  Future<bool> actualizar(PedidosCompanion datos) => update(pedidos).replace(datos);
+  Future<bool> actualizar(PedidosCompanion datos) =>
+      update(pedidos).replace(datos);
 
   Future<int> insertarAuditoria(PedidoAuditoriasCompanion datos) =>
       into(pedidoAuditorias).insert(datos);

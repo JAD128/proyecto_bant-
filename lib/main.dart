@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'configuracion/dependencias.dart';
 import 'estado/menu_proveedor.dart';
+import 'estado/pedido_proveedor.dart';
 import 'estado/sesion_proveedor.dart';
 import 'presentacion/pantallas/configuracion_inicial_pagina.dart';
 import 'presentacion/pantallas/inicio_sesion_pagina.dart';
@@ -15,19 +16,29 @@ Future<void> main() async {
   final sesion = SesionProveedor(dependencias: dependencias);
   await sesion.inicializar();
   final menu = MenuProveedor(dependencias: dependencias, sesion: sesion);
-  runApp(BantuApp(dependencias: dependencias, sesion: sesion, menu: menu));
+  final pedido = PedidoProveedor(dependencias: dependencias, sesion: sesion);
+  runApp(
+    BantuApp(
+      dependencias: dependencias,
+      sesion: sesion,
+      menu: menu,
+      pedido: pedido,
+    ),
+  );
 }
 
 class BantuApp extends StatelessWidget {
   final Dependencias dependencias;
   final SesionProveedor sesion;
   final MenuProveedor menu;
+  final PedidoProveedor pedido;
 
   const BantuApp({
     super.key,
     required this.dependencias,
     required this.sesion,
     required this.menu,
+    required this.pedido,
   });
 
   @override
@@ -37,6 +48,7 @@ class BantuApp extends StatelessWidget {
         Provider<Dependencias>.value(value: dependencias),
         ChangeNotifierProvider<SesionProveedor>.value(value: sesion),
         ChangeNotifierProvider<MenuProveedor>.value(value: menu),
+        ChangeNotifierProvider<PedidoProveedor>.value(value: pedido),
       ],
       child: MaterialApp(
         title: 'Bantú',
@@ -55,9 +67,7 @@ class SelectorPagina extends StatelessWidget {
   Widget build(BuildContext context) {
     final sesion = context.watch<SesionProveedor>();
     if (!sesion.inicializado) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (!sesion.configuracionInicialCompleta) {
       return const ConfiguracionInicialPagina();

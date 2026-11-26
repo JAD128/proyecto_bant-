@@ -57,6 +57,12 @@ class DriftPedidoRepositorio implements PedidoRepositorio {
   }
 
   @override
+  Future<Pedido?> obtenerPorIdempotenciaKey(String clave) async {
+    final fila = await _base.pedidoDao.porIdempotenciaKey(clave);
+    return fila == null ? null : _mapearPedido(fila);
+  }
+
+  @override
   Future<List<Pedido>> obtenerTodos() async {
     final filas = await _base.pedidoDao.todos();
     return Future.wait(filas.map(_mapearPedido));
