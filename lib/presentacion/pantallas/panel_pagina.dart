@@ -6,6 +6,7 @@ import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
 import 'cierres_pagina.dart';
+import 'exportacion_pagina.dart';
 import 'finanzas_pagina.dart';
 import 'historial_pagina.dart';
 import 'menu_pagina.dart';
@@ -152,11 +153,19 @@ class PanelPagina extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Card(
+                Card(
                   child: ListTile(
-                    leading: Icon(Icons.file_download_outlined),
-                    title: Text('Exportación'),
-                    subtitle: Text('Disponible en una fase posterior.'),
+                    leading: const Icon(Icons.file_download_outlined),
+                    title: const Text('Exportación'),
+                    subtitle: const Text('Informes en XLSX o PDF.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardiaRol(
+                          accion: Accion.exportarInformes,
+                          child: ExportacionPagina(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

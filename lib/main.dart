@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'configuracion/dependencias.dart';
 import 'estado/cierre_proveedor.dart';
+import 'estado/exportacion_proveedor.dart';
 import 'estado/finanzas_proveedor.dart';
 import 'estado/historial_proveedor.dart';
 import 'estado/menu_proveedor.dart';
@@ -29,6 +30,10 @@ Future<void> main() async {
     dependencias: dependencias,
     sesion: sesion,
   );
+  final exportacion = ExportacionProveedor(
+    dependencias: dependencias,
+    sesion: sesion,
+  );
   runApp(
     BantuApp(
       dependencias: dependencias,
@@ -38,6 +43,7 @@ Future<void> main() async {
       historial: historial,
       cierre: cierre,
       finanzas: finanzas,
+      exportacion: exportacion,
     ),
   );
 }
@@ -50,6 +56,7 @@ class BantuApp extends StatelessWidget {
   final HistorialProveedor historial;
   final CierreProveedor cierre;
   final FinanzasProveedor finanzas;
+  final ExportacionProveedor exportacion;
 
   const BantuApp({
     super.key,
@@ -60,6 +67,7 @@ class BantuApp extends StatelessWidget {
     required this.historial,
     required this.cierre,
     required this.finanzas,
+    required this.exportacion,
   });
 
   @override
@@ -73,6 +81,7 @@ class BantuApp extends StatelessWidget {
         ChangeNotifierProvider<HistorialProveedor>.value(value: historial),
         ChangeNotifierProvider<CierreProveedor>.value(value: cierre),
         ChangeNotifierProvider<FinanzasProveedor>.value(value: finanzas),
+        ChangeNotifierProvider<ExportacionProveedor>.value(value: exportacion),
       ],
       child: MaterialApp(
         title: 'Bantú',

@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Fase 7 completada: resumen financiero por rango y gastos. `ServicioFinanzas` valida permisos y fechas, delega el cálculo en `CalculadorFinanzas`, ordena los gastos y permite registrar/editar sin borrar. `FinanzasProveedor` y `FinanzasPagina` conectados en `main.dart` y en el panel; Exportación sigue pendiente de Fase 8. `dart analyze` sin issues y `flutter test` en verde (104 pruebas). Siguiente: Fase 8 (exportación XLSX/PDF). Se agregó `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
+Fase 8 completada: exportación de pedidos, gastos y cierres en XLSX y PDF. `ServicioExportacion` valida `Accion.exportarInformes`, reutiliza `ServicioHistorial`, `ServicioFinanzas` y `CierreRepositorio`, y escribe en el directorio de documentos inyectable. `ExportacionProveedor` y `ExportacionPagina` conectados en `main.dart` y en el panel. `dart analyze` sin issues y `flutter test` en verde (113 pruebas). Siguiente: Fase 9 (UI final, accesibilidad y responsive). Se agregó `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
 
 ## Convención por fase
 
@@ -26,7 +26,7 @@ y una actualización de este archivo.
 - [x] Fase 5 — historial y filtros.
 - [x] Fase 6 — cierres diarios y auditoría.
 - [x] Fase 7 — finanzas y gastos.
-- [ ] Fase 8 — exportación XLSX/PDF.
+- [x] Fase 8 — exportación XLSX/PDF.
 - [ ] Fase 9 — UI final, accesibilidad y responsive.
 - [ ] Fase 10 — documentación final y builds.
 
@@ -54,10 +54,16 @@ y una actualización de este archivo.
 - El rango `desde`/`hasta` usa fechas locales `YYYY-MM-DD` validadas con `Validadores`; un rango invertido se rechaza con `ArgumentError`.
 - Los gastos no tienen método de pago y nunca se eliminan: solo se registran y se actualizan. El concepto se guarda recortado en `descripcion`, con valor entero positivo; `id`, `horaLocal`, `usuarioId` y `creadoEn` se conservan al editar.
 - El resumen filtra pedidos y gastos por el mismo rango; los pedidos anulados no aportan ingresos y los gastos solo reducen `saldoNeto`, nunca `efectivoEnCaja`.
+- La Fase 8 tampoco tocó tablas Drift ni `pubspec.yaml`: reutiliza los servicios de historial y finanzas y el repositorio de cierres.
+- Exportar exige `Accion.exportarInformes`; los pedidos se obtienen con `ServicioHistorial.consultar`, por lo que un empleado autorizado solo exporta los suyos salvo `verTodosPedidos`.
+- El rango `desde`/`hasta` se valida con `Validadores` y con los servicios de historial/finanzas; los cierres se filtran por `fechaLocal` sin recalcular snapshots.
+- Los archivos se nombran `bantu_<tipo>_<desde>_<hasta>.<formato>`; un extremo ausente se sustituye por `todo`.
+- El XLSX lleva encabezados en español, cantidades numéricas y los ítems de cada pedido como texto con cantidad, modalidad, precio y total. El PDF lleva título Bantú, rango, resumen financiero y la tabla de datos.
 
 ## Deudas / pendientes
 
 - iOS no se compila en Windows; usar el workflow `ios-sideloadly` de `codemagic.yaml` en Codemagic.
 - `flutter analyze` falla por LSP con la ruta acentuada; usar `dart analyze`.
 - Codegen requiere `--force-jit` en Windows; `--delete-conflicting-outputs` ya no tiene efecto.
-- Finanzas ya está implementada; Exportación permanece como tarjeta deshabilitada en el panel y se implementa en la Fase 8.
+- La exportación guarda el archivo localmente; compartirlo desde la app queda para una fase posterior.
+- La generación de PDF usa la fuente Helvetica incluida en `pdf`; no se descargan fuentes en tiempo de ejecución. El paquete imprime un aviso informativo sobre Type1 en modo debug; el archivo se genera correctamente.

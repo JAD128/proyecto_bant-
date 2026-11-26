@@ -4,19 +4,19 @@
 
 ```text
 lib/presentacion  → lib/estado → lib/dominio → lib/datos/repositorios → lib/datos/bd
-                          ↘ lib/exportacion ↗
 ```
 
 - `presentacion`: pantallas y widgets. No ejecuta SQL ni calcula totales.
 - `estado`: `ChangeNotifier` con `provider`. Expone operaciones a la UI.
 - `dominio`: entidades, enums, validadores y servicios puros. No depende de Flutter ni de Drift.
 - `datos`: tablas Drift, DAOs, implementaciones de repositorios y sesión.
-- `exportacion`: generación de XLSX y PDF a partir de datos ya calculados.
 - `configuracion`: inyección de dependencias y rutas.
 
 ## Regla de dependencia
 
 La UI depende de providers; los providers dependen de servicios o repositorios de dominio; los repositorios definen interfaces y la implementación Drift se inyecta. Para incorporar sincronización en la nube se agregará una nueva implementación de repositorio y un servicio de sincronización sin tocar pantallas.
+
+La generación de XLSX y PDF se encapsula en `dominio/servicios/servicio_exportacion.dart`: el servicio obtiene los datos desde otros servicios de dominio y solo escribe el archivo; la UI no construye documentos ni ejecuta SQL.
 
 ## Persistencia
 

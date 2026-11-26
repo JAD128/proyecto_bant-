@@ -49,4 +49,4 @@ Puede consultar el menú disponible, armar pedidos, registrar pago, confirmar y 
 
 ## Exportación
 
-Solo el administrador puede generar XLSX/PDF para un día o periodo. Los archivos se escriben en el directorio de documentos de la app y se comparten con `share_plus`.
+Solo quien tiene `exportarInformes` (el administrador en la práctica) puede generar XLSX/PDF para un día o periodo. Los pedidos exportados respetan la visibilidad del historial. Los archivos se escriben en el directorio de documentos de la app y la ruta se muestra en pantalla.

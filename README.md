@@ -56,3 +56,4 @@ El proyecto se construye por fases. El estado actual está en `docs/PROGRESO.md`
 - Los pedidos históricos guardan copias de producto y precio.
 - El primer arranque crea al administrador; los empleados son creados por él.
 - Los gastos no tienen método de pago: afectan el balance global, no el efectivo en caja.
+- La exportación genera XLSX/PDF de pedidos, gastos y cierres en el directorio de documentos de la app, con rango opcional y permiso `exportarInformes`.
