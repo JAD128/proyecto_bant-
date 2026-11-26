@@ -8,6 +8,7 @@ import '../../dominio/servicios/validadores.dart';
 import '../../dominio/valores/estrategia_llevar.dart';
 import '../../estado/menu_proveedor.dart';
 import '../../utilidades/formato_moneda.dart';
+import '../widgets/contenido_responsive.dart';
 import '../widgets/guardia_rol.dart';
 
 class MenuPagina extends StatefulWidget {
@@ -84,11 +85,10 @@ class _MenuPaginaState extends State<MenuPagina> {
           ),
         ),
         body: SafeArea(
-          child: TabBarView(
-            children: [
-              _vistaCategorias(menu),
-              _vistaProductos(menu),
-            ],
+          child: ContenidoResponsive(
+            child: TabBarView(
+              children: [_vistaCategorias(menu), _vistaProductos(menu)],
+            ),
           ),
         ),
       ),
@@ -97,7 +97,6 @@ class _MenuPaginaState extends State<MenuPagina> {
 
   Widget _vistaCategorias(MenuProveedor menu) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -150,22 +149,33 @@ class _MenuPaginaState extends State<MenuPagina> {
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton.icon(
-                              onPressed:
-                                  menu.cargando ? null : _guardarCategoria,
-                              icon: const Icon(Icons.save_outlined),
-                              label: Text(
-                                _categoriaIdEditando == null
-                                    ? 'Crear categoría'
-                                    : 'Guardar cambios',
+                            child: Semantics(
+                              button: true,
+                              label: _categoriaIdEditando == null
+                                  ? 'Crear categoría'
+                                  : 'Guardar cambios de la categoría',
+                              child: FilledButton.icon(
+                                onPressed: menu.cargando
+                                    ? null
+                                    : _guardarCategoria,
+                                icon: const Icon(Icons.save_outlined),
+                                label: Text(
+                                  _categoriaIdEditando == null
+                                      ? 'Crear categoría'
+                                      : 'Guardar cambios',
+                                ),
                               ),
                             ),
                           ),
                           if (_categoriaIdEditando != null) ...[
                             const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: _limpiarCategoria,
-                              child: const Text('Cancelar'),
+                            Semantics(
+                              button: true,
+                              label: 'Cancelar edición de categoría',
+                              child: TextButton(
+                                onPressed: _limpiarCategoria,
+                                child: const Text('Cancelar'),
+                              ),
                             ),
                           ],
                         ],
@@ -236,7 +246,6 @@ class _MenuPaginaState extends State<MenuPagina> {
 
   Widget _vistaProductos(MenuProveedor menu) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -277,8 +286,9 @@ class _MenuPaginaState extends State<MenuPagina> {
                         ],
                         onChanged: menu.cargando
                             ? null
-                            : (valor) =>
-                                  setState(() => _categoriaSeleccionada = valor),
+                            : (valor) => setState(
+                                () => _categoriaSeleccionada = valor,
+                              ),
                         validator: (valor) => valor == null || valor.isEmpty
                             ? 'Selecciona una categoría.'
                             : null,
@@ -300,8 +310,7 @@ class _MenuPaginaState extends State<MenuPagina> {
                           labelText: 'Descripción (opcional)',
                           prefixIcon: Icon(Icons.notes_outlined),
                         ),
-                        validator: (valor) =>
-                            _validarDescripcion(valor ?? ''),
+                        validator: (valor) => _validarDescripcion(valor ?? ''),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -381,21 +390,33 @@ class _MenuPaginaState extends State<MenuPagina> {
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton.icon(
-                              onPressed: menu.cargando ? null : _guardarProducto,
-                              icon: const Icon(Icons.save_outlined),
-                              label: Text(
-                                _productoIdEditando == null
-                                    ? 'Crear producto'
-                                    : 'Guardar cambios',
+                            child: Semantics(
+                              button: true,
+                              label: _productoIdEditando == null
+                                  ? 'Crear producto'
+                                  : 'Guardar cambios del producto',
+                              child: FilledButton.icon(
+                                onPressed: menu.cargando
+                                    ? null
+                                    : _guardarProducto,
+                                icon: const Icon(Icons.save_outlined),
+                                label: Text(
+                                  _productoIdEditando == null
+                                      ? 'Crear producto'
+                                      : 'Guardar cambios',
+                                ),
                               ),
                             ),
                           ),
                           if (_productoIdEditando != null) ...[
                             const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: _limpiarProducto,
-                              child: const Text('Cancelar'),
+                            Semantics(
+                              button: true,
+                              label: 'Cancelar edición de producto',
+                              child: TextButton(
+                                onPressed: _limpiarProducto,
+                                child: const Text('Cancelar'),
+                              ),
                             ),
                           ],
                         ],
@@ -423,9 +444,7 @@ class _MenuPaginaState extends State<MenuPagina> {
                   subtitle: Text(
                     '${_textoCategoria(menu, producto.categoriaId)} · '
                     '${FormatoMoneda.cop(producto.precioLocal)} · '
-                    '${producto.estrategiaLlevar == EstrategiaLlevar.precioFijo
-                        ? 'Precio fijo'
-                        : 'Base + empaque'}'
+                    '${producto.estrategiaLlevar == EstrategiaLlevar.precioFijo ? 'Precio fijo' : 'Base + empaque'}'
                     '${producto.activo ? '' : ' · Inactivo'}',
                   ),
                   trailing: Row(
@@ -584,18 +603,19 @@ class _MenuPaginaState extends State<MenuPagina> {
       id: _productoIdEditando,
       categoriaId: _categoriaSeleccionada!,
       nombre: _nombreProducto.text,
-      descripcion:
-          _descripcionProducto.text.trim().isEmpty
-              ? null
-              : _descripcionProducto.text.trim(),
+      descripcion: _descripcionProducto.text.trim().isEmpty
+          ? null
+          : _descripcionProducto.text.trim(),
       precioLocal: int.parse(_precioLocal.text),
-      precioLlevar:
-          precioLlevarTexto.isEmpty ? null : int.parse(precioLlevarTexto),
+      precioLlevar: precioLlevarTexto.isEmpty
+          ? null
+          : int.parse(precioLlevarTexto),
       costoEmpaque: int.tryParse(_costoEmpaque.text) ?? 0,
       estrategiaLlevar: _estrategia,
       activo: _productoActivo,
-      imagenPath:
-          _imagenPath.text.trim().isEmpty ? null : _imagenPath.text.trim(),
+      imagenPath: _imagenPath.text.trim().isEmpty
+          ? null
+          : _imagenPath.text.trim(),
     );
     if (correcto) {
       if (mounted) {

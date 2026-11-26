@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../dominio/servicios/validadores.dart';
 import '../../../estado/sesion_proveedor.dart';
+import '../widgets/contenido_responsive.dart';
 
 class ConfiguracionInicialPagina extends StatefulWidget {
   const ConfiguracionInicialPagina({super.key});
@@ -34,107 +35,120 @@ class _ConfiguracionInicialPaginaState
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 32),
-              Icon(
-                Icons.restaurant_menu,
-                size: 72,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Bienvenido a Bantú',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Crea el usuario administrador para comenzar.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              Form(
-                key: _formulario,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _nombre,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre del administrador',
-                        prefixIcon: Icon(Icons.person_outline),
+        child: ContenidoResponsive(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 32),
+                Icon(
+                  Icons.restaurant_menu,
+                  size: 72,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Bienvenido a Bantú',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Crea el usuario administrador para comenzar.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                Form(
+                  key: _formulario,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _nombre,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Nombre del administrador',
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: (valor) {
+                          final texto = valor?.trim() ?? '';
+                          if (texto.isEmpty) return 'Escribe el nombre.';
+                          if (texto.length > 80) return 'Máximo 80 caracteres.';
+                          return null;
+                        },
                       ),
-                      validator: (valor) {
-                        final texto = valor?.trim() ?? '';
-                        if (texto.isEmpty) return 'Escribe el nombre.';
-                        if (texto.length > 80) return 'Máximo 80 caracteres.';
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _pin,
-                      obscureText: _ocultarPin,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: 'PIN de 4 a 6 dígitos',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _ocultarPin
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _pin,
+                        obscureText: _ocultarPin,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: 'PIN de 4 a 6 dígitos',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: Semantics(
+                            button: true,
+                            label: _ocultarPin ? 'Mostrar PIN' : 'Ocultar PIN',
+                            child: IconButton(
+                              tooltip: _ocultarPin
+                                  ? 'Mostrar PIN'
+                                  : 'Ocultar PIN',
+                              icon: Icon(
+                                _ocultarPin
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                              onPressed: () =>
+                                  setState(() => _ocultarPin = !_ocultarPin),
+                            ),
                           ),
-                          onPressed: () =>
-                              setState(() => _ocultarPin = !_ocultarPin),
+                        ),
+                        validator: (valor) {
+                          try {
+                            Validadores.pin(valor ?? '');
+                            return null;
+                          } on ArgumentError catch (error) {
+                            return error.message?.toString() ?? 'PIN inválido.';
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _confirmacion,
+                        obscureText: _ocultarPin,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        decoration: const InputDecoration(
+                          labelText: 'Confirma el PIN',
+                          prefixIcon: Icon(Icons.lock_outline),
+                        ),
+                        validator: (valor) =>
+                            valor == _pin.text ? null : 'Los PIN no coinciden.',
+                        onFieldSubmitted: (_) => _guardar(),
+                      ),
+                      const SizedBox(height: 24),
+                      Semantics(
+                        button: true,
+                        label: 'Crear administrador',
+                        child: FilledButton.icon(
+                          onPressed: sesion.cargando ? null : _guardar,
+                          icon: sesion.cargando
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.check),
+                          label: const Text('Crear administrador'),
                         ),
                       ),
-                      validator: (valor) {
-                        try {
-                          Validadores.pin(valor ?? '');
-                          return null;
-                        } on ArgumentError catch (error) {
-                          return error.message?.toString() ?? 'PIN inválido.';
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _confirmacion,
-                      obscureText: _ocultarPin,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirma el PIN',
-                        prefixIcon: Icon(Icons.lock_outline),
-                      ),
-                      validator: (valor) => valor == _pin.text
-                          ? null
-                          : 'Los PIN no coinciden.',
-                      onFieldSubmitted: (_) => _guardar(),
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: sesion.cargando ? null : _guardar,
-                      icon: sesion.cargando
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.check),
-                      label: const Text('Crear administrador'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

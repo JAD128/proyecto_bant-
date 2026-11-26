@@ -10,6 +10,7 @@ import '../../dominio/valores/modalidad_pedido.dart';
 import '../../estado/historial_proveedor.dart';
 import '../../estado/sesion_proveedor.dart';
 import '../../utilidades/formato_moneda.dart';
+import '../widgets/contenido_responsive.dart';
 
 class HistorialPagina extends StatefulWidget {
   const HistorialPagina({super.key});
@@ -58,13 +59,15 @@ class _HistorialPaginaState extends State<HistorialPagina> {
     return Scaffold(
       appBar: AppBar(title: const Text('Historial de pedidos')),
       body: SafeArea(
-        child: Form(
-          key: _formulario,
-          child: Column(
-            children: [
-              _filtros(sesion, puedeElegirEmpleado, historial.cargando),
-              Expanded(child: _lista(historial, sesion)),
-            ],
+        child: ContenidoResponsive(
+          child: Form(
+            key: _formulario,
+            child: Column(
+              children: [
+                _filtros(sesion, puedeElegirEmpleado, historial.cargando),
+                Expanded(child: _lista(historial, sesion)),
+              ],
+            ),
           ),
         ),
       ),
@@ -77,7 +80,7 @@ class _HistorialPaginaState extends State<HistorialPagina> {
     bool cargando,
   ) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Wrap(
@@ -189,15 +192,23 @@ class _HistorialPaginaState extends State<HistorialPagina> {
                       : (valor) => setState(() => _empleadoId = valor),
                 ),
               ),
-            FilledButton.icon(
-              onPressed: cargando ? null : _aplicarFiltros,
-              icon: const Icon(Icons.filter_list_outlined),
-              label: const Text('Aplicar filtros'),
+            Semantics(
+              button: true,
+              label: 'Aplicar filtros del historial',
+              child: FilledButton.icon(
+                onPressed: cargando ? null : _aplicarFiltros,
+                icon: const Icon(Icons.filter_list_outlined),
+                label: const Text('Aplicar filtros'),
+              ),
             ),
-            TextButton.icon(
-              onPressed: cargando ? null : _limpiarFiltros,
-              icon: const Icon(Icons.clear_all_outlined),
-              label: const Text('Limpiar'),
+            Semantics(
+              button: true,
+              label: 'Limpiar filtros del historial',
+              child: TextButton.icon(
+                onPressed: cargando ? null : _limpiarFiltros,
+                icon: const Icon(Icons.clear_all_outlined),
+                label: const Text('Limpiar'),
+              ),
             ),
           ],
         ),
@@ -221,7 +232,7 @@ class _HistorialPaginaState extends State<HistorialPagina> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: historial.pedidos.length,
       itemBuilder: (context, indice) {
         final pedido = historial.pedidos[indice];
@@ -240,7 +251,13 @@ class _HistorialPaginaState extends State<HistorialPagina> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 4),
-                      Text('Total: ${FormatoMoneda.cop(pedido.total)}'),
+                      Semantics(
+                        label:
+                            'Total del pedido: ${FormatoMoneda.cop(pedido.total)}',
+                        child: Text(
+                          'Total: ${FormatoMoneda.cop(pedido.total)}',
+                        ),
+                      ),
                       Text('Estado: ${_textoEstado(pedido.estado)}'),
                       Text('Modalidad: ${_textoModalidad(pedido.modalidad)}'),
                       if (sesion.esAdministrador)
@@ -251,9 +268,13 @@ class _HistorialPaginaState extends State<HistorialPagina> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                FilledButton.tonal(
-                  onPressed: () => _mostrarDetalle(pedido),
-                  child: const Text('Detalle'),
+                Semantics(
+                  button: true,
+                  label: 'Ver detalle del pedido de ${pedido.fechaLocal}',
+                  child: FilledButton.tonal(
+                    onPressed: () => _mostrarDetalle(pedido),
+                    child: const Text('Detalle'),
+                  ),
                 ),
               ],
             ),
@@ -316,9 +337,13 @@ class _HistorialPaginaState extends State<HistorialPagina> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cerrar'),
+          Semantics(
+            button: true,
+            label: 'Cerrar detalle del pedido',
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
           ),
         ],
       ),
@@ -326,9 +351,12 @@ class _HistorialPaginaState extends State<HistorialPagina> {
   }
 
   Widget _dato(String etiqueta, String valor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Text('$etiqueta: $valor'),
+    return Semantics(
+      label: '$etiqueta: $valor',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text('$etiqueta: $valor'),
+      ),
     );
   }
 
@@ -345,13 +373,13 @@ class _HistorialPaginaState extends State<HistorialPagina> {
             ),
             Text('Categoría: ${item.categoriaNombre}'),
             Text('Modalidad: ${_textoModalidad(item.modalidad)}'),
-            Text('Precio unitario: ${FormatoMoneda.cop(item.precioUnitario)}'),
-            Text(
-              'Empaque unitario: '
-              '${FormatoMoneda.cop(item.costoEmpaqueUnitario)}',
+            _dato('Precio unitario', FormatoMoneda.cop(item.precioUnitario)),
+            _dato(
+              'Empaque unitario',
+              FormatoMoneda.cop(item.costoEmpaqueUnitario),
             ),
-            Text('Subtotal: ${FormatoMoneda.cop(item.subtotal)}'),
-            Text('Total: ${FormatoMoneda.cop(item.total)}'),
+            _dato('Subtotal', FormatoMoneda.cop(item.subtotal)),
+            _dato('Total', FormatoMoneda.cop(item.total)),
           ],
         ),
       ),

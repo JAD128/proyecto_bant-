@@ -16,6 +16,16 @@ class TemaBantu {
           minimumSize: WidgetStatePropertyAll(Size.fromHeight(48)),
         ),
       ),
+      textButtonTheme: const TextButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: WidgetStatePropertyAll(Size.fromHeight(44)),
+        ),
+      ),
+      iconButtonTheme: const IconButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: WidgetStatePropertyAll(Size.square(44)),
+        ),
+      ),
     );
   }
 }

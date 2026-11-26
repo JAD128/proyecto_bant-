@@ -277,32 +277,49 @@ class ServicioExportacion {
         pageFormat: PdfPageFormat.a4.landscape,
         margin: const pw.EdgeInsets.all(24),
         build: (context) => [
-          pw.Text('Bantú', style: estiloTitulo),
+          pw.Text(_textoPdf('Bantú'), style: estiloTitulo),
           pw.SizedBox(height: 4),
-          pw.Text('Informe de ${tipo.texto}', style: estiloSeccion),
-          pw.Text('Rango: $rango'),
+          pw.Text(_textoPdf('Informe de ${tipo.texto}'), style: estiloSeccion),
+          pw.Text(_textoPdf('Rango: $rango')),
           pw.SizedBox(height: 12),
-          pw.Text('Resumen financiero', style: estiloSeccion),
+          pw.Text(_textoPdf('Resumen financiero'), style: estiloSeccion),
           pw.SizedBox(height: 4),
           pw.TableHelper.fromTextArray(
-            headers: const ['Indicador', 'Valor'],
+            headers: [_textoPdf('Indicador'), _textoPdf('Valor')],
             data: [
-              ['Ingresos', FormatoMoneda.cop(resumen.ingresos)],
-              ['Egresos', FormatoMoneda.cop(resumen.egresos)],
-              ['Saldo neto', FormatoMoneda.cop(resumen.saldoNeto)],
-              ['Efectivo en caja', FormatoMoneda.cop(resumen.efectivoEnCaja)],
+              [
+                _textoPdf('Ingresos'),
+                _textoPdf(FormatoMoneda.cop(resumen.ingresos)),
+              ],
+              [
+                _textoPdf('Egresos'),
+                _textoPdf(FormatoMoneda.cop(resumen.egresos)),
+              ],
+              [
+                _textoPdf('Saldo neto'),
+                _textoPdf(FormatoMoneda.cop(resumen.saldoNeto)),
+              ],
+              [
+                _textoPdf('Efectivo en caja'),
+                _textoPdf(FormatoMoneda.cop(resumen.efectivoEnCaja)),
+              ],
             ],
             cellStyle: estiloCelda,
             headerStyle: estiloEncabezado,
           ),
           pw.SizedBox(height: 16),
-          pw.Text('${tipo.texto} (${tabla.filas.length})', style: estiloSeccion),
+          pw.Text(
+            _textoPdf('${tipo.texto} (${tabla.filas.length})'),
+            style: estiloSeccion,
+          ),
           pw.SizedBox(height: 4),
           pw.TableHelper.fromTextArray(
-            headers: tabla.encabezados,
+            headers: [
+              for (final encabezado in tabla.encabezados) _textoPdf(encabezado),
+            ],
             data: [
               for (final fila in tabla.filas)
-                [for (final valor in fila) valor.toString()],
+                [for (final valor in fila) _textoPdf(valor)],
             ],
             cellStyle: estiloCelda,
             headerStyle: estiloEncabezado,
@@ -311,6 +328,29 @@ class ServicioExportacion {
       ),
     );
     return documento.save();
+  }
+
+  String _textoPdf(Object valor) {
+    const equivalencias = <String, String>{
+      'á': 'a',
+      'Á': 'A',
+      'é': 'e',
+      'É': 'E',
+      'í': 'i',
+      'Í': 'I',
+      'ó': 'o',
+      'Ó': 'O',
+      'ú': 'u',
+      'Ú': 'U',
+      'ñ': 'n',
+      'Ñ': 'N',
+      '¿': '?',
+      '¡': '!',
+    };
+    return valor.toString().replaceAllMapped(
+      RegExp(r'[áéíóúÁÉÍÓÚñÑ¿¡]'),
+      (coincidencia) => equivalencias[coincidencia[0]]!,
+    );
   }
 
   void _validarRango(String? desde, String? hasta) {

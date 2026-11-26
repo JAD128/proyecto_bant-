@@ -7,6 +7,7 @@ import '../../dominio/servicios/validadores.dart';
 import '../../dominio/valores/estado_cierre.dart';
 import '../../estado/cierre_proveedor.dart';
 import '../../utilidades/formato_moneda.dart';
+import '../widgets/contenido_responsive.dart';
 import '../widgets/guardia_rol.dart';
 
 class CierresPagina extends StatefulWidget {
@@ -46,22 +47,24 @@ class _CierresPaginaState extends State<CierresPagina> {
       child: Scaffold(
         appBar: AppBar(title: const Text('Cierres diarios')),
         body: SafeArea(
-          child: Column(
-            children: [
-              Form(key: _claveFecha, child: _tarjetaFecha(proveedor)),
-              Form(key: _claveCorreccion, child: _tarjetaCorreccion(proveedor)),
-              if (proveedor.error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
+          child: ContenidoResponsive(
+            child: Column(
+              children: [
+                Form(key: _claveFecha, child: _tarjetaFecha(proveedor)),
+                Form(
+                  key: _claveCorreccion,
+                  child: _tarjetaCorreccion(proveedor),
+                ),
+                if (proveedor.error != null)
+                  Text(
                     proveedor.error!,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                ),
-              Expanded(child: _lista(proveedor)),
-            ],
+                Expanded(child: _lista(proveedor)),
+              ],
+            ),
           ),
         ),
       ),
@@ -70,7 +73,7 @@ class _CierresPaginaState extends State<CierresPagina> {
 
   Widget _tarjetaFecha(CierreProveedor proveedor) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Wrap(
@@ -92,10 +95,14 @@ class _CierresPaginaState extends State<CierresPagina> {
                     .seleccionarFecha(valor.trim()),
               ),
             ),
-            FilledButton.icon(
-              onPressed: proveedor.cargando ? null : _cerrarDia,
-              icon: const Icon(Icons.lock_outline),
-              label: const Text('Cerrar día'),
+            Semantics(
+              button: true,
+              label: 'Cerrar día',
+              child: FilledButton.icon(
+                onPressed: proveedor.cargando ? null : _cerrarDia,
+                icon: const Icon(Icons.lock_outline),
+                label: const Text('Cerrar día'),
+              ),
             ),
             if (proveedor.cargando)
               const SizedBox(
@@ -112,7 +119,7 @@ class _CierresPaginaState extends State<CierresPagina> {
   Widget _tarjetaCorreccion(CierreProveedor proveedor) {
     final cierre = proveedor.cierreActual;
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -134,12 +141,16 @@ class _CierresPaginaState extends State<CierresPagina> {
               validator: _validarMotivo,
             ),
             const SizedBox(height: 8),
-            FilledButton.tonalIcon(
-              onPressed: (proveedor.cargando || cierre == null)
-                  ? null
-                  : _corregir,
-              icon: const Icon(Icons.task_alt_outlined),
-              label: const Text('Corregir cierre'),
+            Semantics(
+              button: true,
+              label: 'Corregir cierre',
+              child: FilledButton.tonalIcon(
+                onPressed: (proveedor.cargando || cierre == null)
+                    ? null
+                    : _corregir,
+                icon: const Icon(Icons.task_alt_outlined),
+                label: const Text('Corregir cierre'),
+              ),
             ),
           ],
         ),
@@ -163,7 +174,7 @@ class _CierresPaginaState extends State<CierresPagina> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.only(bottom: 16),
       itemCount: proveedor.cierres.length,
       itemBuilder: (context, indice) {
         final cierre = proveedor.cierres[indice];
@@ -195,18 +206,26 @@ class _CierresPaginaState extends State<CierresPagina> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton.icon(
-                      onPressed: () => context
-                          .read<CierreProveedor>()
-                          .seleccionarFecha(cierre.fechaLocal),
-                      icon: const Icon(Icons.task_alt_outlined),
-                      label: const Text('Seleccionar'),
+                    Semantics(
+                      button: true,
+                      label: 'Seleccionar cierre de ${cierre.fechaLocal}',
+                      child: TextButton.icon(
+                        onPressed: () => context
+                            .read<CierreProveedor>()
+                            .seleccionarFecha(cierre.fechaLocal),
+                        icon: const Icon(Icons.task_alt_outlined),
+                        label: const Text('Seleccionar'),
+                      ),
                     ),
                     const SizedBox(width: 4),
-                    TextButton.icon(
-                      onPressed: () => _verAuditorias(cierre),
-                      icon: const Icon(Icons.history_outlined),
-                      label: const Text('Auditorías'),
+                    Semantics(
+                      button: true,
+                      label: 'Ver auditorías de ${cierre.fechaLocal}',
+                      child: TextButton.icon(
+                        onPressed: () => _verAuditorias(cierre),
+                        icon: const Icon(Icons.history_outlined),
+                        label: const Text('Auditorías'),
+                      ),
                     ),
                   ],
                 ),
@@ -235,7 +254,8 @@ class _CierresPaginaState extends State<CierresPagina> {
     );
   }
 
-  Widget _dato(String etiqueta, String valor) => Text('$etiqueta: $valor');
+  Widget _dato(String etiqueta, String valor) =>
+      Semantics(label: '$etiqueta: $valor', child: Text('$etiqueta: $valor'));
 
   Future<void> _cerrarDia() async {
     if (!_claveFecha.currentState!.validate()) {
@@ -317,9 +337,13 @@ class _CierresPaginaState extends State<CierresPagina> {
                 ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cerrar'),
+          Semantics(
+            button: true,
+            label: 'Cerrar auditorías',
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
           ),
         ],
       ),

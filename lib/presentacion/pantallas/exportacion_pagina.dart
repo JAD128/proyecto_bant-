@@ -6,6 +6,7 @@ import '../../dominio/servicios/validadores.dart';
 import '../../dominio/valores/formato_exportacion.dart';
 import '../../dominio/valores/tipo_exportacion.dart';
 import '../../estado/exportacion_proveedor.dart';
+import '../widgets/contenido_responsive.dart';
 import '../widgets/guardia_rol.dart';
 
 class ExportacionPagina extends StatefulWidget {
@@ -37,111 +38,116 @@ class _ExportacionPaginaState extends State<ExportacionPagina> {
       child: Scaffold(
         appBar: AppBar(title: const Text('Exportación')),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formulario,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  DropdownButtonFormField<TipoExportacion>(
-                    initialValue: _tipo,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de informe',
-                      prefixIcon: Icon(Icons.description_outlined),
+          child: ContenidoResponsive(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formulario,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    DropdownButtonFormField<TipoExportacion>(
+                      initialValue: _tipo,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Tipo de informe',
+                        prefixIcon: Icon(Icons.description_outlined),
+                      ),
+                      items: [
+                        for (final tipo in TipoExportacion.values)
+                          DropdownMenuItem<TipoExportacion>(
+                            value: tipo,
+                            child: Text(tipo.texto),
+                          ),
+                      ],
+                      onChanged: (valor) {
+                        if (valor != null) {
+                          setState(() => _tipo = valor);
+                        }
+                      },
                     ),
-                    items: [
-                      for (final tipo in TipoExportacion.values)
-                        DropdownMenuItem<TipoExportacion>(
-                          value: tipo,
-                          child: Text(tipo.texto),
-                        ),
-                    ],
-                    onChanged: (valor) {
-                      if (valor != null) {
-                        setState(() => _tipo = valor);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<FormatoExportacion>(
-                    initialValue: _formato,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Formato',
-                      prefixIcon: Icon(Icons.file_download_outlined),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<FormatoExportacion>(
+                      initialValue: _formato,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Formato',
+                        prefixIcon: Icon(Icons.file_download_outlined),
+                      ),
+                      items: [
+                        for (final formato in FormatoExportacion.values)
+                          DropdownMenuItem<FormatoExportacion>(
+                            value: formato,
+                            child: Text(formato.texto),
+                          ),
+                      ],
+                      onChanged: (valor) {
+                        if (valor != null) {
+                          setState(() => _formato = valor);
+                        }
+                      },
                     ),
-                    items: [
-                      for (final formato in FormatoExportacion.values)
-                        DropdownMenuItem<FormatoExportacion>(
-                          value: formato,
-                          child: Text(formato.texto),
-                        ),
-                    ],
-                    onChanged: (valor) {
-                      if (valor != null) {
-                        setState(() => _formato = valor);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _desde,
-                    decoration: const InputDecoration(
-                      labelText: 'Desde (YYYY-MM-DD)',
-                      prefixIcon: Icon(Icons.calendar_today_outlined),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _desde,
+                      decoration: const InputDecoration(
+                        labelText: 'Desde (YYYY-MM-DD)',
+                        prefixIcon: Icon(Icons.calendar_today_outlined),
+                      ),
+                      validator: _validarFechaOpcional,
                     ),
-                    validator: _validarFechaOpcional,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _hasta,
-                    decoration: const InputDecoration(
-                      labelText: 'Hasta (YYYY-MM-DD)',
-                      prefixIcon: Icon(Icons.calendar_month_outlined),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _hasta,
+                      decoration: const InputDecoration(
+                        labelText: 'Hasta (YYYY-MM-DD)',
+                        prefixIcon: Icon(Icons.calendar_month_outlined),
+                      ),
+                      validator: _validarFechaOpcional,
                     ),
-                    validator: _validarFechaOpcional,
-                  ),
-                  const SizedBox(height: 16),
-                  FilledButton.icon(
-                    onPressed: exportacion.cargando ? null : _exportar,
-                    icon: const Icon(Icons.save_outlined),
-                    label: Text(
-                      exportacion.cargando
-                          ? 'Generando...'
-                          : 'Exportar ${_formato.texto}',
-                    ),
-                  ),
-                  if (exportacion.error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        exportacion.error!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+                    const SizedBox(height: 16),
+                    Semantics(
+                      button: true,
+                      label: 'Exportar informe en ${_formato.texto}',
+                      child: FilledButton.icon(
+                        onPressed: exportacion.cargando ? null : _exportar,
+                        icon: const Icon(Icons.save_outlined),
+                        label: Text(
+                          exportacion.cargando
+                              ? 'Generando...'
+                              : 'Exportar ${_formato.texto}',
                         ),
                       ),
                     ),
-                  if (exportacion.ruta != null)
-                    Card(
-                      margin: const EdgeInsets.only(top: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Archivo generado',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            SelectableText(exportacion.ruta!),
-                          ],
+                    if (exportacion.error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          exportacion.error!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                    if (exportacion.ruta != null)
+                      Card(
+                        margin: const EdgeInsets.only(top: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Archivo generado',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              SelectableText(exportacion.ruta!),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

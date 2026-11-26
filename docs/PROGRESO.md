@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Fase 8 completada: exportación de pedidos, gastos y cierres en XLSX y PDF. `ServicioExportacion` valida `Accion.exportarInformes`, reutiliza `ServicioHistorial`, `ServicioFinanzas` y `CierreRepositorio`, y escribe en el directorio de documentos inyectable. `ExportacionProveedor` y `ExportacionPagina` conectados en `main.dart` y en el panel. `dart analyze` sin issues y `flutter test` en verde (113 pruebas). Siguiente: Fase 9 (UI final, accesibilidad y responsive). Se agregó `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
+Fase 9 completada: UI final, accesibilidad y responsive. `ContenidoResponsive` limita el ancho a 960, centra y aplica padding de 16 en móvil y 24 en tablet; se aplicó al cuerpo de las diez pantallas funcionales. `PanelPagina` usa `NavigationBar` bajo 900 y `NavigationRail` extendido desde 900, con los mismos destinos y guardias. Se añadieron etiquetas `Semantics`/tooltips y objetivos táctiles mínimos, sin tocar servicios, providers, esquema Drift ni `pubspec.yaml`. El texto del PDF se convierte a ASCII para Helvetica; el XLSX y los nombres de archivo no cambian. `dart analyze` sin issues y `flutter test` en verde (117 pruebas). Siguiente: Fase 10 (documentación final y builds). Se mantiene `codemagic.yaml` con el workflow `ios-sideloadly`, que genera un IPA sin firma para Sideloadly.
 
 ## Convención por fase
 
@@ -27,7 +27,7 @@ y una actualización de este archivo.
 - [x] Fase 6 — cierres diarios y auditoría.
 - [x] Fase 7 — finanzas y gastos.
 - [x] Fase 8 — exportación XLSX/PDF.
-- [ ] Fase 9 — UI final, accesibilidad y responsive.
+- [x] Fase 9 — UI final, accesibilidad y responsive.
 - [ ] Fase 10 — documentación final y builds.
 
 ## Decisiones registradas
@@ -59,6 +59,7 @@ y una actualización de este archivo.
 - El rango `desde`/`hasta` se valida con `Validadores` y con los servicios de historial/finanzas; los cierres se filtran por `fechaLocal` sin recalcular snapshots.
 - Los archivos se nombran `bantu_<tipo>_<desde>_<hasta>.<formato>`; un extremo ausente se sustituye por `todo`.
 - El XLSX lleva encabezados en español, cantidades numéricas y los ítems de cada pedido como texto con cantidad, modalidad, precio y total. El PDF lleva título Bantú, rango, resumen financiero y la tabla de datos.
+- La Fase 9 no tocó servicios financieros, repositorios ni `pubspec.yaml`: `ContenidoResponsive` es solo presentación y `_textoPdf` convierte a ASCII únicamente el texto del PDF. El XLSX y los nombres de archivo conservan los caracteres originales.
 
 ## Deudas / pendientes
 
@@ -66,4 +67,5 @@ y una actualización de este archivo.
 - `flutter analyze` falla por LSP con la ruta acentuada; usar `dart analyze`.
 - Codegen requiere `--force-jit` en Windows; `--delete-conflicting-outputs` ya no tiene efecto.
 - La exportación guarda el archivo localmente; compartirlo desde la app queda para una fase posterior.
-- La generación de PDF usa la fuente Helvetica incluida en `pdf`; no se descargan fuentes en tiempo de ejecución. El paquete imprime un aviso informativo sobre Type1 en modo debug; el archivo se genera correctamente.
+- La generación de PDF usa la fuente Helvetica incluida en `pdf`; no se descargan fuentes en tiempo de ejecución. `_textoPdf` ya elimina tildes, `ñ` y signos de apertura del texto, pero `pdf-3.12.0` imprime el aviso Type1 de forma incondicional en debug al construir Helvetica; el archivo se genera correctamente.
+- Accesibilidad: validar con TalkBack/VoiceOver y escalado de texto en dispositivo.

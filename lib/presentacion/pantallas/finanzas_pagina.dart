@@ -8,6 +8,7 @@ import '../../dominio/servicios/validadores.dart';
 import '../../estado/finanzas_proveedor.dart';
 import '../../utilidades/fechas.dart';
 import '../../utilidades/formato_moneda.dart';
+import '../widgets/contenido_responsive.dart';
 import '../widgets/guardia_rol.dart';
 
 class FinanzasPagina extends StatefulWidget {
@@ -52,38 +53,37 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
       child: Scaffold(
         appBar: AppBar(title: const Text('Finanzas')),
         body: SafeArea(
-          child: Column(
-            children: [
-              Form(key: _formularioRango, child: _tarjetaRango(finanzas)),
-              _resumen(finanzas.resumen),
-              if (finanzas.error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
+          child: ContenidoResponsive(
+            child: Column(
+              children: [
+                Form(key: _formularioRango, child: _tarjetaRango(finanzas)),
+                _resumen(finanzas.resumen),
+                if (finanzas.error != null)
+                  Text(
                     finanzas.error!,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      GuardiaRol(
-                        accion: Accion.registrarGasto,
-                        child: Form(
-                          key: _formularioGasto,
-                          child: _formularioGastoWidget(finanzas),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        GuardiaRol(
+                          accion: Accion.registrarGasto,
+                          child: Form(
+                            key: _formularioGasto,
+                            child: _formularioGastoWidget(finanzas),
+                          ),
                         ),
-                      ),
-                      _listaGastos(finanzas),
-                    ],
+                        _listaGastos(finanzas),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -92,7 +92,7 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
 
   Widget _tarjetaRango(FinanzasProveedor finanzas) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Wrap(
@@ -122,15 +122,23 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
                 validator: _validarFechaOpcional,
               ),
             ),
-            FilledButton.icon(
-              onPressed: finanzas.cargando ? null : _aplicarRango,
-              icon: const Icon(Icons.filter_list_outlined),
-              label: const Text('Aplicar rango'),
+            Semantics(
+              button: true,
+              label: 'Aplicar rango financiero',
+              child: FilledButton.icon(
+                onPressed: finanzas.cargando ? null : _aplicarRango,
+                icon: const Icon(Icons.filter_list_outlined),
+                label: const Text('Aplicar rango'),
+              ),
             ),
-            TextButton.icon(
-              onPressed: finanzas.cargando ? null : _limpiarRango,
-              icon: const Icon(Icons.clear_all_outlined),
-              label: const Text('Limpiar'),
+            Semantics(
+              button: true,
+              label: 'Limpiar rango financiero',
+              child: TextButton.icon(
+                onPressed: finanzas.cargando ? null : _limpiarRango,
+                icon: const Icon(Icons.clear_all_outlined),
+                label: const Text('Limpiar'),
+              ),
             ),
           ],
         ),
@@ -139,36 +147,36 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
   }
 
   Widget _resumen(ResumenFinanciero resumen) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          _dato('Ingresos', FormatoMoneda.cop(resumen.ingresos)),
-          _dato('Egresos', FormatoMoneda.cop(resumen.egresos)),
-          _dato('Saldo neto', FormatoMoneda.cop(resumen.saldoNeto)),
-          _dato('Efectivo en caja', FormatoMoneda.cop(resumen.efectivoEnCaja)),
-          _dato('Llevar', FormatoMoneda.cop(resumen.ingresosLlevar)),
-          _dato('Local', FormatoMoneda.cop(resumen.ingresosLocal)),
-        ],
-      ),
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _dato('Ingresos', FormatoMoneda.cop(resumen.ingresos)),
+        _dato('Egresos', FormatoMoneda.cop(resumen.egresos)),
+        _dato('Saldo neto', FormatoMoneda.cop(resumen.saldoNeto)),
+        _dato('Efectivo en caja', FormatoMoneda.cop(resumen.efectivoEnCaja)),
+        _dato('Llevar', FormatoMoneda.cop(resumen.ingresosLlevar)),
+        _dato('Local', FormatoMoneda.cop(resumen.ingresosLocal)),
+      ],
     );
   }
 
   Widget _dato(String etiqueta, String valor) {
-    return SizedBox(
-      width: 165,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(etiqueta, style: Theme.of(context).textTheme.labelLarge),
-              const SizedBox(height: 4),
-              Text(valor, style: Theme.of(context).textTheme.titleMedium),
-            ],
+    return Semantics(
+      label: '$etiqueta: $valor',
+      child: SizedBox(
+        width: 165,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(etiqueta, style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 4),
+                Text(valor, style: Theme.of(context).textTheme.titleMedium),
+              ],
+            ),
           ),
         ),
       ),
@@ -177,7 +185,7 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
 
   Widget _formularioGastoWidget(FinanzasProveedor finanzas) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -217,10 +225,14 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
               validator: _validarFecha,
             ),
             const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: finanzas.cargando ? null : _registrarGasto,
-              icon: const Icon(Icons.add_outlined),
-              label: const Text('Registrar gasto'),
+            Semantics(
+              button: true,
+              label: 'Registrar gasto',
+              child: FilledButton.icon(
+                onPressed: finanzas.cargando ? null : _registrarGasto,
+                icon: const Icon(Icons.add_outlined),
+                label: const Text('Registrar gasto'),
+              ),
             ),
           ],
         ),
@@ -231,7 +243,7 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
   Widget _listaGastos(FinanzasProveedor finanzas) {
     if (finanzas.gastos.isEmpty) {
       return const Padding(
-        padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Card(
           child: ListTile(
             title: Text('No hay gastos registrados'),
@@ -244,20 +256,29 @@ class _FinanzasPaginaState extends State<FinanzasPagina> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: finanzas.gastos.length,
       itemBuilder: (context, indice) {
         final gasto = finanzas.gastos[indice];
         return Card(
           child: ListTile(
             title: Text(gasto.descripcion),
-            subtitle: Text(
-              '${gasto.fechaLocal} · ${FormatoMoneda.cop(gasto.valor)}',
+            subtitle: Semantics(
+              label:
+                  'Gasto de ${FormatoMoneda.cop(gasto.valor)} '
+                  'el ${gasto.fechaLocal}',
+              child: Text(
+                '${gasto.fechaLocal} · ${FormatoMoneda.cop(gasto.valor)}',
+              ),
             ),
-            trailing: TextButton.icon(
-              onPressed: () => _editarGasto(gasto),
-              icon: const Icon(Icons.edit_outlined),
-              label: const Text('Editar'),
+            trailing: Semantics(
+              button: true,
+              label: 'Editar gasto ${gasto.descripcion}',
+              child: TextButton.icon(
+                onPressed: () => _editarGasto(gasto),
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Editar'),
+              ),
             ),
           ),
         );
@@ -406,13 +427,21 @@ class _DialogoEdicionGastoState extends State<_DialogoEdicionGasto> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+        Semantics(
+          button: true,
+          label: 'Cancelar edición de gasto',
+          child: TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
         ),
-        FilledButton(
-          onPressed: cargando ? null : _guardar,
-          child: const Text('Guardar'),
+        Semantics(
+          button: true,
+          label: 'Guardar cambios del gasto',
+          child: FilledButton(
+            onPressed: cargando ? null : _guardar,
+            child: const Text('Guardar'),
+          ),
         ),
       ],
     );

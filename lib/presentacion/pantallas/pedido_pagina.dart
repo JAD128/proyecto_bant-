@@ -10,6 +10,7 @@ import '../../estado/menu_proveedor.dart';
 import '../../estado/pedido_proveedor.dart';
 import '../../utilidades/fechas.dart';
 import '../../utilidades/formato_moneda.dart';
+import '../widgets/contenido_responsive.dart';
 import '../widgets/guardia_rol.dart';
 
 class PedidoPagina extends StatefulWidget {
@@ -55,148 +56,157 @@ class _PedidoPaginaState extends State<PedidoPagina> {
     return Scaffold(
       appBar: AppBar(title: const Text('Pedidos')),
       body: SafeArea(
-        child: Form(
-          key: _formulario,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _resumen(pedido),
-                const SizedBox(height: 24),
-                Text(
-                  'Productos activos',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                if (menu.cargando && productosActivos.isEmpty)
-                  const Center(child: CircularProgressIndicator())
-                else if (productosActivos.isEmpty)
-                  const Card(
-                    child: ListTile(
-                      title: Text('No hay productos activos.'),
-                      subtitle: Text(
-                        'Configura el menú antes de registrar pedidos.',
-                      ),
-                    ),
-                  )
-                else
-                  for (final producto in productosActivos)
-                    _controlProducto(producto, pedido),
-                const SizedBox(height: 24),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'Datos del pedido',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _fecha,
-                          decoration: const InputDecoration(
-                            labelText: 'Fecha (YYYY-MM-DD)',
-                            prefixIcon: Icon(Icons.calendar_today_outlined),
-                          ),
-                          validator: _validarFecha,
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _hora,
-                          decoration: const InputDecoration(
-                            labelText: 'Hora (HH:mm)',
-                            prefixIcon: Icon(Icons.access_time_outlined),
-                          ),
-                          validator: _validarHora,
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<MetodoPago>(
-                          initialValue: _metodoPago,
-                          decoration: const InputDecoration(
-                            labelText: 'Método de pago',
-                            prefixIcon: Icon(Icons.payments_outlined),
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: MetodoPago.efectivo,
-                              child: Text('Efectivo'),
-                            ),
-                            DropdownMenuItem(
-                              value: MetodoPago.transferencia,
-                              child: Text('Transferencia'),
-                            ),
-                          ],
-                          onChanged: pedido.cargando
-                              ? null
-                              : (valor) {
-                                  if (valor != null) {
-                                    setState(() => _metodoPago = valor);
-                                  }
-                                },
-                        ),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed:
-                              pedido.cargando ||
-                                  pedido.itemsCarrito.isEmpty ||
-                                  pedido.resultado == null
-                              ? null
-                              : _confirmar,
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: const Text('Confirmar'),
-                        ),
-                      ],
-                    ),
+        child: ContenidoResponsive(
+          child: Form(
+            key: _formulario,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _resumen(pedido),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Productos activos',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                ),
-                const SizedBox(height: 24),
-                GuardiaRol(
-                  accion: Accion.anularPedido,
-                  child: Card(
+                  const SizedBox(height: 8),
+                  if (menu.cargando && productosActivos.isEmpty)
+                    const Center(child: CircularProgressIndicator())
+                  else if (productosActivos.isEmpty)
+                    const Card(
+                      child: ListTile(
+                        title: Text('No hay productos activos.'),
+                        subtitle: Text(
+                          'Configura el menú antes de registrar pedidos.',
+                        ),
+                      ),
+                    )
+                  else
+                    for (final producto in productosActivos)
+                      _controlProducto(producto, pedido),
+                  const SizedBox(height: 24),
+                  Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Anular pedido',
+                            'Datos del pedido',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
-                            controller: _pedidoIdAnular,
+                            controller: _fecha,
                             decoration: const InputDecoration(
-                              labelText: 'ID del pedido',
-                              prefixIcon: Icon(Icons.receipt_outlined),
+                              labelText: 'Fecha (YYYY-MM-DD)',
+                              prefixIcon: Icon(Icons.calendar_today_outlined),
                             ),
-                            validator: (valor) =>
-                                _validarTexto(valor, 'pedidoId'),
+                            validator: _validarFecha,
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
-                            controller: _motivoAnular,
+                            controller: _hora,
                             decoration: const InputDecoration(
-                              labelText: 'Motivo',
-                              prefixIcon: Icon(Icons.notes_outlined),
+                              labelText: 'Hora (HH:mm)',
+                              prefixIcon: Icon(Icons.access_time_outlined),
                             ),
-                            validator: (valor) =>
-                                _validarTexto(valor, 'motivo'),
+                            validator: _validarHora,
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<MetodoPago>(
+                            initialValue: _metodoPago,
+                            decoration: const InputDecoration(
+                              labelText: 'Método de pago',
+                              prefixIcon: Icon(Icons.payments_outlined),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: MetodoPago.efectivo,
+                                child: Text('Efectivo'),
+                              ),
+                              DropdownMenuItem(
+                                value: MetodoPago.transferencia,
+                                child: Text('Transferencia'),
+                              ),
+                            ],
+                            onChanged: pedido.cargando
+                                ? null
+                                : (valor) {
+                                    if (valor != null) {
+                                      setState(() => _metodoPago = valor);
+                                    }
+                                  },
                           ),
                           const SizedBox(height: 16),
-                          FilledButton.tonalIcon(
-                            onPressed: pedido.cargando ? null : _anular,
-                            icon: const Icon(Icons.block_outlined),
-                            label: const Text('Anular pedido'),
+                          Semantics(
+                            button: true,
+                            label: 'Confirmar pedido',
+                            child: FilledButton.icon(
+                              onPressed:
+                                  pedido.cargando ||
+                                      pedido.itemsCarrito.isEmpty ||
+                                      pedido.resultado == null
+                                  ? null
+                                  : _confirmar,
+                              icon: const Icon(Icons.check_circle_outline),
+                              label: const Text('Confirmar'),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  GuardiaRol(
+                    accion: Accion.anularPedido,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Anular pedido',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _pedidoIdAnular,
+                              decoration: const InputDecoration(
+                                labelText: 'ID del pedido',
+                                prefixIcon: Icon(Icons.receipt_outlined),
+                              ),
+                              validator: (valor) =>
+                                  _validarTexto(valor, 'pedidoId'),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _motivoAnular,
+                              decoration: const InputDecoration(
+                                labelText: 'Motivo',
+                                prefixIcon: Icon(Icons.notes_outlined),
+                              ),
+                              validator: (valor) =>
+                                  _validarTexto(valor, 'motivo'),
+                            ),
+                            const SizedBox(height: 16),
+                            Semantics(
+                              button: true,
+                              label: 'Anular pedido',
+                              child: FilledButton.tonalIcon(
+                                onPressed: pedido.cargando ? null : _anular,
+                                icon: const Icon(Icons.block_outlined),
+                                label: const Text('Anular pedido'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -245,12 +255,16 @@ class _PedidoPaginaState extends State<PedidoPagina> {
   }
 
   Widget _fila(String etiqueta, String valor, [TextStyle? estilo]) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(etiqueta, style: estilo),
-        Text(valor, style: estilo),
-      ],
+    return Semantics(
+      container: true,
+      label: '$etiqueta: $valor',
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(etiqueta, style: estilo),
+          Text(valor, style: estilo),
+        ],
+      ),
     );
   }
 
@@ -272,52 +286,67 @@ class _PedidoPaginaState extends State<PedidoPagina> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    tooltip: 'Quitar ${producto.nombre}',
-                    icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: pedido.cargando || cantidad == 0
-                        ? null
-                        : () =>
-                              pedido.cambiarCantidad(producto.id, cantidad - 1),
+                  Semantics(
+                    button: true,
+                    label: 'Quitar ${producto.nombre}',
+                    child: IconButton(
+                      tooltip: 'Quitar ${producto.nombre}',
+                      icon: const Icon(Icons.remove_circle_outline),
+                      onPressed: pedido.cargando || cantidad == 0
+                          ? null
+                          : () => pedido.cambiarCantidad(
+                              producto.id,
+                              cantidad - 1,
+                            ),
+                    ),
                   ),
-                  Text('$cantidad'),
-                  IconButton(
-                    tooltip: 'Agregar ${producto.nombre}',
-                    icon: const Icon(Icons.add_circle_outline),
-                    onPressed: pedido.cargando
-                        ? null
-                        : () => pedido.agregar(producto),
+                  Semantics(
+                    label: 'Cantidad de ${producto.nombre}: $cantidad',
+                    child: Text('$cantidad'),
+                  ),
+                  Semantics(
+                    button: true,
+                    label: 'Agregar ${producto.nombre}',
+                    child: IconButton(
+                      tooltip: 'Agregar ${producto.nombre}',
+                      icon: const Icon(Icons.add_circle_outline),
+                      onPressed: pedido.cargando
+                          ? null
+                          : () => pedido.agregar(producto),
+                    ),
                   ),
                 ],
               ),
             ),
             if (cantidad > 0)
-              Row(
-                children: [
-                  const Text('Modalidad:'),
-                  const SizedBox(width: 8),
-                  DropdownButton<ModalidadPedido>(
-                    value: modalidad,
-                    isDense: true,
-                    items: const [
-                      DropdownMenuItem(
-                        value: ModalidadPedido.local,
-                        child: Text('Local'),
-                      ),
-                      DropdownMenuItem(
-                        value: ModalidadPedido.llevar,
-                        child: Text('Llevar'),
-                      ),
-                    ],
-                    onChanged: pedido.cargando
-                        ? null
-                        : (valor) {
-                            if (valor != null) {
-                              pedido.cambiarModalidad(producto.id, valor);
-                            }
-                          },
-                  ),
-                ],
+              Semantics(
+                label: 'Modalidad de ${producto.nombre}: ${modalidad.texto}',
+                child: Row(
+                  children: [
+                    const Text('Modalidad:'),
+                    const SizedBox(width: 8),
+                    DropdownButton<ModalidadPedido>(
+                      value: modalidad,
+                      items: const [
+                        DropdownMenuItem(
+                          value: ModalidadPedido.local,
+                          child: Text('Local'),
+                        ),
+                        DropdownMenuItem(
+                          value: ModalidadPedido.llevar,
+                          child: Text('Llevar'),
+                        ),
+                      ],
+                      onChanged: pedido.cargando
+                          ? null
+                          : (valor) {
+                              if (valor != null) {
+                                pedido.cambiarModalidad(producto.id, valor);
+                              }
+                            },
+                    ),
+                  ],
+                ),
               ),
           ],
         ),
