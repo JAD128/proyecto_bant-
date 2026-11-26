@@ -5,6 +5,7 @@ import '../../../dominio/servicios/servicio_permisos.dart';
 import '../../../dominio/valores/rol.dart';
 import '../../../estado/sesion_proveedor.dart';
 import '../widgets/guardia_rol.dart';
+import 'historial_pagina.dart';
 import 'menu_pagina.dart';
 import 'pedido_pagina.dart';
 import 'usuarios_pagina.dart';
@@ -101,6 +102,46 @@ class PanelPagina extends StatelessWidget {
                         ),
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.history_toggle_off_outlined),
+                    title: const Text('Historial'),
+                    subtitle: const Text('Consulta pedidos con filtros.'),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardiaRol(
+                          accion: Accion.verHistorial,
+                          child: HistorialPagina(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.calendar_month_outlined),
+                    title: Text('Cierres'),
+                    subtitle: Text('Disponible en una fase posterior.'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.account_balance_wallet_outlined),
+                    title: Text('Finanzas'),
+                    subtitle: Text('Disponible en una fase posterior.'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.file_download_outlined),
+                    title: Text('Exportación'),
+                    subtitle: Text('Disponible en una fase posterior.'),
                   ),
                 ),
               ],

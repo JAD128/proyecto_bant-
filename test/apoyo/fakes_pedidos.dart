@@ -1,6 +1,54 @@
 import 'package:bantu/datos/repositorios/pedido_repositorio.dart';
 import 'package:bantu/dominio/entidades/pedido.dart';
 import 'package:bantu/dominio/valores/estado_pedido.dart';
+import 'package:bantu/dominio/valores/metodo_pago.dart';
+import 'package:bantu/dominio/valores/modalidad_pedido.dart';
+
+Pedido pedidoHistorial({
+  String id = 'pedido-1',
+  String empleadoId = 'mesero1',
+  String fechaLocal = '2026-01-01',
+  String horaLocal = '12:00',
+  EstadoPedido estado = EstadoPedido.confirmado,
+  ModalidadPedido modalidad = ModalidadPedido.local,
+  MetodoPago metodoPago = MetodoPago.efectivo,
+  int total = 1000,
+  String? motivoAnulacion,
+  List<ItemPedido>? items,
+}) {
+  final ahora = DateTime.utc(2026, 1, 1, 12);
+  return Pedido(
+    id: id,
+    idempotenciaKey: 'clave-$id',
+    empleadoId: empleadoId,
+    fechaLocal: fechaLocal,
+    horaLocal: horaLocal,
+    creadoEn: ahora,
+    modalidad: modalidad,
+    metodoPago: metodoPago,
+    estado: estado,
+    subtotal: total,
+    costoEmpaque: 0,
+    total: total,
+    motivoAnulacion: motivoAnulacion,
+    items:
+        items ??
+        [
+          ItemPedido(
+            id: 'item-$id',
+            productoId: 'producto-1',
+            nombreProducto: 'Agua',
+            categoriaNombre: 'Bebidas',
+            cantidad: 1,
+            modalidad: modalidad,
+            precioUnitario: total,
+            costoEmpaqueUnitario: 0,
+            subtotal: total,
+            total: total,
+          ),
+        ],
+  );
+}
 
 class AuditoriaAnulacionMemoria {
   final String pedidoId;
